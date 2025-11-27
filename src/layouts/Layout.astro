@@ -1,0 +1,40 @@
+---
+// src/layouts/Layout.astro
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Уроки фортепиано и живая музыка" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+		
+		<title>{title}</title>
+	</head>
+	
+	<body class="bg-piano-black text-piano-white font-sans antialiased selection:bg-gold-accent selection:text-piano-black">
+		
+		<nav class="fixed w-full z-50 top-0 left-0 p-6 flex justify-between items-center mix-blend-difference text-white">
+			<div class="text-xl font-serif font-bold tracking-widest">PIANO ART</div>
+			<div class="hidden md:flex gap-8 text-sm tracking-widest uppercase opacity-80">
+				<a href="#about" class="hover:text-gold-accent transition-colors">Обо мне</a>
+				<a href="#lessons" class="hover:text-gold-accent transition-colors">Уроки</a>
+				<a href="#booking" class="hover:text-gold-accent transition-colors">Запись</a>
+			</div>
+		</nav>
+
+		<slot />
+
+	</body>
+</html>
