@@ -4,23 +4,34 @@ import BookingCalendar from '../components/BookingCalendar.jsx';
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Юлия Ралько | Уроки фортепиано в Минске">
+<Layout title="PianoRoom | Юлия Ралько | Уроки фортепиано">
 	<main>
 		
 		<section class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
 			
 			<div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-piano-dark via-piano-black to-black opacity-90 z-0"></div>
 
-			<div class="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-8 animate-fade-in">
+			<div class="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6 animate-fade-in">
 				<p class="text-gold-accent tracking-[0.3em] uppercase text-xs md:text-sm font-medium">
 					Минск • Online • Offline
 				</p>
-				<h1 class="font-serif text-5xl md:text-7xl lg:text-8xl leading-tight text-white">
-					Юлия <span class="text-gold-accent italic">Ралько</span>
+				
+				<h1 class="font-serif text-6xl md:text-8xl lg:text-9xl leading-tight text-white">
+					PianoRoom
 				</h1>
-				<p class="text-white/80 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed font-serif italic">
+				
+				<p class="text-2xl md:text-4xl font-serif text-white/90 italic">
+					Юлия Ралько
+				</p>
+
+				<p class="text-white/80 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed font-serif italic pt-4">
 					«Моя цель — сделать из каждого ученика самостоятельного музыканта»
 				</p>
+
+				<div class="flex items-center justify-center gap-2 text-gold-accent/90 mt-2">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+					<span class="text-lg tracking-wide border-b border-gold-accent/30 pb-1">Минск, проспект Машерова, 9</span>
+				</div>
 
 				<div class="flex flex-col md:flex-row gap-6 justify-center items-center pt-8">
 					<a href="#booking" class="group relative px-10 py-4 bg-gold-accent text-piano-black font-bold uppercase tracking-widest text-sm hover:bg-white transition-all duration-300 rounded-sm">
@@ -111,12 +122,11 @@ import Layout from '../layouts/Layout.astro';
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-8">
-					
 					<div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-gold-accent transition-colors group">
 						<h3 class="text-xl font-serif mb-2 text-white/80">Разовое</h3>
 						<div class="text-4xl font-serif text-gold-accent mb-6">45 BYN</div>
 						<p class="text-sm text-white/60 mb-8 leading-relaxed">
-							Идеально для знакомства с инструментом или консультации по конкретному произведению.
+							Идеально для знакомства с инструментом или консультации.
 						</p>
 						<a href="#booking" class="block w-full py-3 text-center border border-white/20 text-xs uppercase tracking-widest hover:bg-gold-accent hover:border-gold-accent hover:text-piano-black transition-all rounded-lg">
 							Выбрать
@@ -127,7 +137,7 @@ import Layout from '../layouts/Layout.astro';
 						<h3 class="text-xl font-serif mb-2 text-white/80">Абонемент 4</h3>
 						<div class="text-4xl font-serif text-gold-accent mb-6">170 BYN</div>
 						<p class="text-sm text-white/60 mb-8 leading-relaxed">
-							Для тех, кто хочет заниматься раз в неделю. Базовый курс для старта.
+							Базовый курс для старта (раз в неделю).
 						</p>
 						<a href="#booking" class="block w-full py-3 text-center border border-white/20 text-xs uppercase tracking-widest hover:bg-gold-accent hover:border-gold-accent hover:text-piano-black transition-all rounded-lg">
 							Выбрать
@@ -141,13 +151,12 @@ import Layout from '../layouts/Layout.astro';
 						<h3 class="text-xl font-serif mb-2 text-white">Абонемент 8</h3>
 						<div class="text-5xl font-serif text-gold-accent mb-6">320 BYN</div>
 						<p class="text-sm text-white/60 mb-8 leading-relaxed">
-							Регулярные занятия 2 раза в неделю для быстрого и уверенного прогресса.
+							Для быстрого прогресса (2 раза в неделю).
 						</p>
 						<a href="#booking" class="block w-full py-4 text-center bg-gold-accent text-piano-black text-xs uppercase tracking-widest font-bold hover:bg-white transition-all rounded-lg">
 							Записаться
 						</a>
 					</div>
-
 				</div>
 			</div>
 		</section>
@@ -157,9 +166,9 @@ import Layout from '../layouts/Layout.astro';
 
 			<div class="max-w-6xl mx-auto w-full relative z-10 space-y-12">
 				<div class="text-center">
-					<h2 class="font-serif text-4xl md:text-5xl text-white mb-4">Начните свой путь</h2>
-					<p class="text-white/50 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
-						<span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-accent"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> г. Минск, пр. Машерова 9</span>
+					<h2 class="font-serif text-4xl md:text-5xl text-white mb-4">Запись на урок</h2>
+					<p class="text-white/50">
+						Выберите удобный день (Ср, Пт, Сб) и время
 					</p>
 				</div>
 

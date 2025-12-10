@@ -21,12 +21,10 @@ export default function BookingCalendar() {
   const [currentMonth, setCurrentMonth] = useState(startOfToday());
   const [selectedTime, setSelectedTime] = useState(null);
   
-  // Состояния для модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Календарная логика
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const monthStart = startOfMonth(currentMonth);
@@ -37,12 +35,11 @@ export default function BookingCalendar() {
   const timeSlots = ["10:00", "11:30", "14:00", "15:30", "17:00", "18:30", "20:00"];
   const isPrevDisabled = isSameMonth(currentMonth, startOfToday());
 
-  // === ЛОГИКА ОТПРАВКИ ФОРМЫ ===
+  // === ЛОГИКА ОТПРАВКИ ===
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Данные формы
     const formData = {
         name: e.target[0].value,
         phone: e.target[1].value,
@@ -51,12 +48,7 @@ export default function BookingCalendar() {
         time: selectedTime
     };
 
-    /* ВАЖНО: Сейчас включен режим СИМУЛЯЦИИ (чтобы вы могли проверить дизайн без .env).
-       Когда заполните .env реальными данными, удалите блок setTimeout ниже 
-       и раскомментируйте блок "REAL BACKEND".
-    */
-
-    // --- НАЧАЛО: СИМУЛЯЦИЯ (ДЛЯ ДИЗАЙНА) ---
+    // --- СИМУЛЯЦИЯ (Пока не настроен .env) ---
     setTimeout(() => {
         setIsLoading(false);
         setIsSuccess(true);
@@ -64,42 +56,24 @@ export default function BookingCalendar() {
             setIsModalOpen(false);
             setIsSuccess(false);
             setSelectedTime(null);
-        }, 3000);
+        }, 5000); // Даем 5 секунд прочитать сообщение
     }, 1500);
-    // --- КОНЕЦ: СИМУЛЯЦИЯ ---
-
-
-    /* // --- НАЧАЛО: REAL BACKEND (РАСКОММЕНТИРОВАТЬ ПОЗЖЕ) ---
+    
+    /* // --- НАСТОЯЩАЯ ОТПРАВКА (Раскомментировать, когда заполните .env) ---
     try {
         const response = await fetch('/.netlify/functions/booking', {
-            method: 'POST',
-            body: JSON.stringify(formData),
+            method: 'POST', body: JSON.stringify(formData),
         });
-
-        if (!response.ok) throw new Error('Ошибка отправки');
-
-        setIsSuccess(true); // Показываем галочку
-        
-        setTimeout(() => {
-            setIsModalOpen(false);
-            setIsSuccess(false);
-            setSelectedTime(null);
-        }, 3000);
-
-    } catch (error) {
-        alert("Ошибка! Проверьте консоль.");
-        console.error(error);
-    } finally {
-        setIsLoading(false);
-    }
-    // --- КОНЕЦ: REAL BACKEND ---
+        if (!response.ok) throw new Error('Ошибка');
+        setIsSuccess(true);
+        setTimeout(() => { setIsModalOpen(false); setIsSuccess(false); setSelectedTime(null); }, 5000);
+    } catch (error) { console.error(error); } finally { setIsLoading(false); }
     */
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto bg-piano-dark p-6 md:p-10 rounded-3xl border border-white/10 shadow-2xl relative">
       
-      {/* --- ОСНОВНОЙ КАЛЕНДАРЬ --- */}
       <div className="flex flex-col lg:flex-row gap-12">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-6">
@@ -125,14 +99,33 @@ export default function BookingCalendar() {
               const isSelected = isSameDay(day, selectedDate);
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isPast = isBefore(day, startOfToday());
+              
+              // === НОВАЯ ЛОГИКА: Блокировка дней ===
+              // 0=Вс, 1=Пн, 2=Вт, 3=Ср, 4=Чт, 5=Пт, 6=Сб
+              // Блокируем: Пн(1), Вт(2), Чт(4), Вс(0)
+              const dayOfWeek = day.getDay();
+              const isBlockedDay = [0, 1, 2, 4].includes(dayOfWeek);
+              
+              const isDisabled = isPast || isBlockedDay;
+
               return (
                 <button
                   key={day.toString()}
-                  disabled={isPast}
+                  disabled={isDisabled}
                   onClick={() => { setSelectedDate(day); setSelectedTime(null); }}
-                  className={`relative h-10 sm:h-14 rounded-lg flex items-center justify-center text-sm sm:text-base transition-all ${!isCurrentMonth ? 'text-white/20' : ''} ${isPast ? 'text-white/10 cursor-not-allowed' : 'hover:bg-white/5'} ${isSelected ? 'bg-gold-accent text-piano-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:bg-gold-accent' : ''} ${isSameDay(day, startOfToday()) && !isSelected ? 'text-gold-accent font-bold border border-gold-accent/30' : ''}`}
+                  className={`
+                    relative h-10 sm:h-14 rounded-lg flex items-center justify-center text-sm sm:text-base transition-all
+                    ${!isCurrentMonth ? 'opacity-0 pointer-events-none' : ''} 
+                    ${isDisabled ? 'text-white/5 cursor-not-allowed' : 'hover:bg-white/5 text-white'}
+                    ${isSelected && !isDisabled ? 'bg-gold-accent text-piano-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:bg-gold-accent' : ''}
+                    ${isSameDay(day, startOfToday()) && !isSelected && !isDisabled ? 'text-gold-accent font-bold border border-gold-accent/30' : ''}
+                  `}
                 >
                   {format(day, 'd')}
+                  {/* Красная точка для заблокированных дней (опционально, можно убрать) */}
+                  {isBlockedDay && isCurrentMonth && !isPast && (
+                     <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white/10 rounded-full"></span>
+                  )}
                 </button>
               );
             })}
@@ -167,61 +160,38 @@ export default function BookingCalendar() {
         </div>
       </div>
 
-      {/* --- МОДАЛЬНОЕ ОКНО (ФОРМА) --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsModalOpen(false)}
-          ></div>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
 
           <div className="relative bg-piano-dark border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl animate-fade-in">
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"><X size={24} /></button>
 
             {!isSuccess ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="text-center space-y-2">
-                  <h3 className="text-2xl font-serif text-white">Завершение записи</h3>
-                  <p className="text-white/60 text-sm">
-                    {format(selectedDate, 'd MMMM yyyy', { locale: ru })} в {selectedTime}
-                  </p>
+                  <h3 className="text-2xl font-serif text-white">Запись на урок</h3>
+                  <p className="text-white/60 text-sm">{format(selectedDate, 'd MMMM yyyy', { locale: ru })} в {selectedTime}</p>
                 </div>
-
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">Ваше имя</label>
-                    <input type="text" required placeholder="Иван Иванов" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none focus:ring-1 focus:ring-gold-accent transition-colors placeholder:text-white/20" />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">Телефон / Telegram</label>
-                    <input type="text" required placeholder="+7 999 000-00-00" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none focus:ring-1 focus:ring-gold-accent transition-colors placeholder:text-white/20" />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">Комментарий</label>
-                    <textarea rows="2" placeholder="Хочу сыграть..." className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none focus:ring-1 focus:ring-gold-accent transition-colors placeholder:text-white/20 resize-none"></textarea>
-                  </div>
+                  <input type="text" required placeholder="Ваше имя" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none" />
+                  <input type="text" required placeholder="Телефон / Telegram" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none" />
+                  <textarea rows="2" placeholder="Комментарий" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none resize-none"></textarea>
                 </div>
-
-                <button 
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gold-accent text-piano-black font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
+                <button type="submit" disabled={isLoading} className="w-full bg-gold-accent text-piano-black font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white transition-all flex items-center justify-center gap-2">
                   {isLoading ? <Loader2 className="animate-spin" /> : 'Подтвердить запись'}
                 </button>
               </form>
             ) : (
+              // === НОВЫЙ ТЕКСТ УСПЕХА ===
               <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50">
                   <Check size={32} />
                 </div>
                 <h3 className="text-2xl font-serif text-white">Заявка отправлена!</h3>
-                <p className="text-white/60">Я свяжусь с вами в ближайшее время.</p>
+                <p className="text-white/60 leading-relaxed px-4">
+                  Спасибо! С Вами свяжутся и согласуют детали в ближайшее время.
+                </p>
               </div>
             )}
           </div>
