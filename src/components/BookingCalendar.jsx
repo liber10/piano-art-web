@@ -14,7 +14,7 @@ import {
   startOfToday
 } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, X, Check, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, X, Loader2, Send } from 'lucide-react';
 
 export default function BookingCalendar() {
   const [selectedDate, setSelectedDate] = useState(startOfToday());
@@ -23,7 +23,6 @@ export default function BookingCalendar() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
@@ -35,40 +34,20 @@ export default function BookingCalendar() {
   const timeSlots = ["10:00", "11:30", "14:00", "15:30", "17:00", "18:30", "20:00"];
   const isPrevDisabled = isSameMonth(currentMonth, startOfToday());
 
-  // === ЛОГИКА ОТПРАВКИ ===
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const formData = {
-        name: e.target[0].value,
-        phone: e.target[1].value,
-        comment: e.target[2].value,
-        date: selectedDate,
-        time: selectedTime
-    };
-
-    // --- СИМУЛЯЦИЯ (Пока не настроен .env) ---
+    // Имитация загрузки и редирект
     setTimeout(() => {
         setIsLoading(false);
-        setIsSuccess(true);
-        setTimeout(() => {
-            setIsModalOpen(false);
-            setIsSuccess(false);
-            setSelectedTime(null);
-        }, 5000); // Даем 5 секунд прочитать сообщение
-    }, 1500);
-    
-    /* // --- НАСТОЯЩАЯ ОТПРАВКА (Раскомментировать, когда заполните .env) ---
-    try {
-        const response = await fetch('/.netlify/functions/booking', {
-            method: 'POST', body: JSON.stringify(formData),
-        });
-        if (!response.ok) throw new Error('Ошибка');
-        setIsSuccess(true);
-        setTimeout(() => { setIsModalOpen(false); setIsSuccess(false); setSelectedTime(null); }, 5000);
-    } catch (error) { console.error(error); } finally { setIsLoading(false); }
-    */
+        setIsModalOpen(false);
+        
+        // ПЕРЕКИДЫВАЕМ В TELEGRAM
+        window.open('https://t.me/yuliya_ralko', '_blank');
+        
+        setSelectedTime(null);
+    }, 800);
   };
 
   return (
@@ -100,12 +79,9 @@ export default function BookingCalendar() {
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isPast = isBefore(day, startOfToday());
               
-              // === НОВАЯ ЛОГИКА: Блокировка дней ===
-              // 0=Вс, 1=Пн, 2=Вт, 3=Ср, 4=Чт, 5=Пт, 6=Сб
               // Блокируем: Пн(1), Вт(2), Чт(4), Вс(0)
               const dayOfWeek = day.getDay();
               const isBlockedDay = [0, 1, 2, 4].includes(dayOfWeek);
-              
               const isDisabled = isPast || isBlockedDay;
 
               return (
@@ -122,10 +98,6 @@ export default function BookingCalendar() {
                   `}
                 >
                   {format(day, 'd')}
-                  {/* Красная точка для заблокированных дней (опционально, можно убрать) */}
-                  {isBlockedDay && isCurrentMonth && !isPast && (
-                     <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white/10 rounded-full"></span>
-                  )}
                 </button>
               );
             })}
@@ -167,33 +139,28 @@ export default function BookingCalendar() {
           <div className="relative bg-piano-dark border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl animate-fade-in">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"><X size={24} /></button>
 
-            {!isSuccess ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="text-center space-y-2">
-                  <h3 className="text-2xl font-serif text-white">Запись на урок</h3>
-                  <p className="text-white/60 text-sm">{format(selectedDate, 'd MMMM yyyy', { locale: ru })} в {selectedTime}</p>
+                  <h3 className="text-2xl font-serif text-white">Почти готово</h3>
+                  <p className="text-white/60 text-sm">
+                    Нажмите кнопку ниже, чтобы перейти в Telegram для подтверждения записи на <br/>
+                    <span className="text-gold-accent">{format(selectedDate, 'd MMMM', { locale: ru })} в {selectedTime}</span>
+                  </p>
                 </div>
-                <div className="space-y-4">
-                  <input type="text" required placeholder="Ваше имя" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none" />
-                  <input type="text" required placeholder="Телефон / Telegram" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none" />
-                  <textarea rows="2" placeholder="Комментарий" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold-accent focus:outline-none resize-none"></textarea>
-                </div>
-                <button type="submit" disabled={isLoading} className="w-full bg-gold-accent text-piano-black font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white transition-all flex items-center justify-center gap-2">
-                  {isLoading ? <Loader2 className="animate-spin" /> : 'Подтвердить запись'}
+                
+                <button type="submit" disabled={isLoading} className="w-full bg-[#229ED9] text-white font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white hover:text-[#229ED9] transition-all flex items-center justify-center gap-2">
+                  {isLoading ? <Loader2 className="animate-spin" /> : (
+                    <>
+                      <span>Перейти в Telegram</span>
+                      <Send size={18} />
+                    </>
+                  )}
                 </button>
-              </form>
-            ) : (
-              // === НОВЫЙ ТЕКСТ УСПЕХА ===
-              <div className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50">
-                  <Check size={32} />
-                </div>
-                <h3 className="text-2xl font-serif text-white">Заявка отправлена!</h3>
-                <p className="text-white/60 leading-relaxed px-4">
-                  Спасибо! С Вами свяжутся и согласуют детали в ближайшее время.
+                
+                <p className="text-center text-xs text-white/30">
+                    Откроется чат с @yuliya_ralko
                 </p>
-              </div>
-            )}
+              </form>
           </div>
         </div>
       )}
