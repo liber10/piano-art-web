@@ -1,5 +1,4 @@
 ---
-// src/layouts/Layout.astro
 interface Props {
 	title: string;
 }
@@ -28,7 +27,7 @@ const { title } = Astro.props;
 		<nav class="fixed w-full z-50 top-0 left-0 p-6 flex justify-between items-center mix-blend-difference text-white">
 			<div class="text-xl font-serif font-bold tracking-widest">PianoRoom</div>
 			<div class="hidden md:flex gap-8 text-sm tracking-widest uppercase opacity-80">
-				<a href="#about" class="hover:text-gold-accent transition-colors">Обо мне</a>
+				<a href="#teachers" class="hover:text-gold-accent transition-colors">Преподаватели</a>
 				<a href="#lessons" class="hover:text-gold-accent transition-colors">Уроки</a>
 				<a href="#booking" class="hover:text-gold-accent transition-colors">Запись</a>
 			</div>
